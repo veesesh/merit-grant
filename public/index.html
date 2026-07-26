@@ -166,7 +166,7 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
   <div class="kpis" id="kpis"></div>
 
   <h2>Funded contributors</h2>
-  <p class="sect">Everyone here got in by landing a verified pull request. Each has a real account on Vouch, and the bar shows how far up the four funding levels they have climbed.</p>
+  <p class="sect">Each level is earned by a merged pull request, so nobody is paid for simply showing up. Click any pull request below to check the work yourself.</p>
   <div class="people" id="people"></div>
   <div class="empty" id="nopeople" style="display:none">Nobody yet. Verify a pull request above and the author shows up here.</div>
 
@@ -195,8 +195,8 @@ function plainWords(v){
   if(v.decision==='RELEASE') return 'Checks passed, so @'+v.author+' moved up a level and that money is now available to them.';
   if(v.decision==='DUPLICATE') return 'This pull request has already paid out once. A PR can only ever be counted a single time, so nothing was released.';
   if(v.decision==='SKIP') return 'This pull request has not been merged, so there is nothing to pay for yet.';
-  if(!v.aiCoauthor) return 'The commits carry no AI co-author, so we cannot confirm an AI tool helped write this. Funding is held.';
-  if(!v.profileOk) return 'The account looks too new or too empty to trust yet, so funding is held.';
+  if(!v.aiCoauthor) return 'The commits carry no AI co-author, so we cannot confirm an AI tool helped write this. Nothing is released.';
+  if(!v.profileOk) return 'The account looks too new or too empty to trust yet, so nothing is released.';
   return 'Funding is held for this one.';
 }
 
@@ -210,7 +210,7 @@ function render(st){
     return `<div class="person" style="animation-delay:${i*50}ms">
       <div class="phead"><div><span class="nm">${c.name}</span><span class="gh">@${c.github}</span></div><span class="badge ${c.verified?'ok':'no'}">${c.verified?'verified':'unverified'}</span></div>
       <div class="track">${track}</div>
-      <div class="tracklb">level ${c.level} of ${st.ladder.length}</div>
+      <div class="tracklb">${c.level?`level ${c.level} of ${st.ladder.length}`:`no funding released`}</div>
       <div class="money"><b>$${c.released}</b><span>Vouch account ${c.tokenId||'…'}</span></div>
       ${(c.prs&&c.prs.length)?`<div class="prlist"><span class="prlb">Unlocked by</span>${c.prs.map(p=>`<a class="prlink ${p.decision}" href="https://github.com/${p.repo}/pull/${p.pr}" target="_blank" title="${p.repo} #${p.pr} · ${p.decision==='RELEASE'?'released level '+p.level:'held'}">${p.repo.split('/')[1]}#${p.pr}</a>`).join('')}</div>`:''}</div>`;
   }).join('');

@@ -16,7 +16,7 @@ const B = "https://api.programmablevouchers.com/api/v1";
 const KEY = process.env.VOUCH_API_KEY;
 const PORT = process.env.PORT || 4319;
 // Program on Vouch. Change this (or set SLUG=...) for a clean slate.
-const SLUG = process.env.SLUG || "meritgrant-demo";
+const SLUG = process.env.SLUG || "meritgrant-v2";
 const GH_TOKEN = process.env.GITHUB_TOKEN || ""; // optional, raises GitHub rate limit
 
 if (!KEY) {
@@ -26,10 +26,12 @@ if (!KEY) {
 // "prove you used an AI coding tool" — any of these as a commit co-author counts
 const AI_COAUTHOR = /co-?authored-by:[^\n]*\b(codex|claude|copilot|gpt|cursor|devin|gemini)\b/i;
 
+// Every level is earned by a merged PR. Nobody is paid for showing up, so a
+// contributor whose PR fails the checks sits at level 0 with nothing released.
 const LADDER = [
-  { level: 1, label: "Onboarded", amount: 10 },
-  { level: 2, label: "First PR", amount: 20 },
-  { level: 3, label: "3 PRs", amount: 30 },
+  { level: 1, label: "First PR", amount: 10 },
+  { level: 2, label: "Second PR", amount: 20 },
+  { level: 3, label: "Third PR", amount: 30 },
   { level: 4, label: "Capstone", amount: 50 },
 ];
 const amtFor = (l) => LADDER.find(x => x.level === l)?.amount ?? 0;
@@ -106,7 +108,8 @@ async function ensurePerson({ id, name, github, verified }) {
   const suf = (Date.now() % 1000000000).toString();
   const phone = "+9198" + suf.slice(0, 8);
   const e = await api(`enrol ${name}`, "POST", `/programs/${S.slug}/enrol`, { phone, fields: { fullName: name, github } });
-  S.people[id] = { id, name, github, verified, level: 1, released: amtFor(1), tokenId: e.data?.beneficiary?.tokenId, heldAtNext: false, prs: [] };
+  // Level 0, nothing released. Funding only starts once a PR passes the checks.
+  S.people[id] = { id, name, github, verified, level: 0, released: 0, tokenId: e.data?.beneficiary?.tokenId, heldAtNext: false, prs: [] };
   return S.people[id];
 }
 
@@ -147,7 +150,7 @@ async function restoreCredited() {
         // First sighting is the newest event, so it carries their current standing.
         S.people[id] = {
           id, name: p.name || p.github, github: p.github, verified: p.verified !== false,
-          level: p.level, released: p.released ?? amtFor(1), tokenId: p.tokenId,
+          level: p.level, released: p.released ?? 0, tokenId: p.tokenId,
           heldAtNext: !!p.heldNext, prs: [],
         };
         nPeople++;
