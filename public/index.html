@@ -30,7 +30,8 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-
 .nav a{color:var(--fg3);text-decoration:none;transition:color .15s var(--e);white-space:nowrap}
 .nav a:hover{color:var(--fg)}
 .nav .ext{color:var(--accent);margin-left:1px}
-@media(max-width:900px){.nav{display:none}}
+@media(max-width:900px){.nav a.int{display:none}.nav{gap:16px}}
+@media(max-width:560px){.nav a.sec{display:none}.status{padding:5px 10px}}
 .eyebrow{scroll-margin-top:86px}
 .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
 .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);display:block;flex:none;position:relative}
@@ -153,12 +154,12 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-
 <header>
   <a class="brand" href="#top"><span class="mark"><i></i><i></i><i></i></span><b>MeritGrant</b></a>
   <nav class="nav">
-    <a href="#how">How it works</a>
-    <a href="#try">Verify</a>
-    <a href="#contributors">Contributors</a>
-    <a href="#receipts">Receipts</a>
+    <a class="int" href="#how">How it works</a>
+    <a class="int" href="#try">Verify</a>
+    <a class="int" href="#contributors">Contributors</a>
+    <a class="int" href="#receipts">Receipts</a>
     <a href="https://github.com/veesesh/merit-grant" target="_blank" rel="noopener">GitHub <span class="ext">↗</span></a>
-    <a href="https://vouch.finance/" target="_blank" rel="noopener">Vouch <span class="ext">↗</span></a>
+    <a class="sec" href="https://vouch.finance/" target="_blank" rel="noopener">Vouch <span class="ext">↗</span></a>
   </nav>
   <div class="status"><span class="hdot" id="hdot"></span><span id="htext">checking</span></div>
 </header>
@@ -211,7 +212,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-
   <div class="log" id="log"></div>
 
   <div class="foot">
-    <span>MeritGrant runs on the <a class="a" href="https://vouch.finance/" target="_blank" rel="noopener">Vouch API</a></span>
+    <span>MeritGrant runs on the <a class="a" href="https://vouch.finance/" target="_blank" rel="noopener">Vouch API</a> · <a class="a" href="https://github.com/veesesh/merit-grant" target="_blank" rel="noopener">source on GitHub ↗</a></span>
     <button class="link" id="reset">Reload from Vouch</button>
   </div>
 </div>
