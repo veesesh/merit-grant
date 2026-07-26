@@ -24,8 +24,15 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-
 .wrap{max-width:880px;margin:0 auto;padding:0 24px 110px}
 a{color:inherit}
 
-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:26px 0;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:11px}
+html{scroll-behavior:smooth}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--line);background:#000000e6;backdrop-filter:blur(10px)}
+.nav{display:flex;gap:26px;font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.02em}
+.nav a{color:var(--fg3);text-decoration:none;transition:color .15s var(--e);white-space:nowrap}
+.nav a:hover{color:var(--fg)}
+.nav .ext{color:var(--accent);margin-left:1px}
+@media(max-width:900px){.nav{display:none}}
+.eyebrow{scroll-margin-top:86px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
 .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);display:block;flex:none;position:relative}
 .mark i{position:absolute;bottom:6px;background:#1a1a19;border-radius:1.4px;display:block}
 .mark i:nth-child(1){left:5px;width:4px;height:6px}
@@ -144,7 +151,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;fl
 </style></head><body><div class="wrap">
 
 <header>
-  <div class="brand"><span class="mark"><i></i><i></i><i></i></span><b>MeritGrant</b></div>
+  <a class="brand" href="#top"><span class="mark"><i></i><i></i><i></i></span><b>MeritGrant</b></a>
+  <nav class="nav">
+    <a href="#how">How it works</a>
+    <a href="#try">Verify</a>
+    <a href="#contributors">Contributors</a>
+    <a href="#receipts">Receipts</a>
+    <a href="https://github.com/veesesh/merit-grant" target="_blank" rel="noopener">GitHub <span class="ext">↗</span></a>
+    <a href="https://vouch.finance/" target="_blank" rel="noopener">Vouch <span class="ext">↗</span></a>
+  </nav>
   <div class="status"><span class="hdot" id="hdot"></span><span id="htext">checking</span></div>
 </header>
 
@@ -153,7 +168,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;fl
   <p>Paste a merged GitHub pull request. MeritGrant checks it against GitHub, then releases the next level of a grant on <a class="a" href="https://vouch.finance/" target="_blank" rel="noopener">Vouch</a>. Every check and every payout here is real.</p>
 </div>
 
-<div class="eyebrow">How it works</div>
+<div class="eyebrow" id="how">How it works</div>
 <h2 class="headline">Three checks. Then the money moves.</h2>
 <p class="sect">Nobody is paid for showing up. Each level is earned by a merged pull request.</p>
 <div class="steps">
@@ -165,7 +180,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;fl
 <div id="boot" class="empty" style="margin-top:26px"><span class="spin"></span>Setting up the grant program on Vouch</div>
 
 <div id="app" style="display:none">
-  <div class="eyebrow">Try it</div>
+  <div class="eyebrow" id="try">Try it</div>
   <h2 class="headline">Check a real pull request.</h2>
   <p class="sect">Paste a URL, or click an example to load one.</p>
   <div class="prv">
@@ -179,18 +194,18 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;fl
     <div id="verifybox"></div>
   </div>
 
-  <div class="eyebrow">The fund</div>
+  <div class="eyebrow" id="fund">The fund</div>
   <h2 class="headline">Live totals, read back from Vouch.</h2>
   <p class="sect">There is no database here. <a class="a" href="https://vouch.finance/" target="_blank" rel="noopener">Vouch</a> stores every milestone, and this page rebuilds itself from those records.</p>
   <div class="kpis" id="kpis"></div>
 
-  <div class="eyebrow">Contributors</div>
+  <div class="eyebrow" id="contributors">Contributors</div>
   <h2 class="headline">Everyone here earned it.</h2>
   <p class="sect">Each level was unlocked by a merged pull request. Click any of them to check the work yourself.</p>
   <div class="people" id="people"></div>
   <div class="empty" id="nopeople" style="display:none">Nobody yet. Verify a pull request above and the author shows up here.</div>
 
-  <div class="eyebrow">Receipts</div>
+  <div class="eyebrow" id="receipts">Receipts</div>
   <h2 class="headline">Every call to Vouch.</h2>
   <p class="sect">One row per HTTP request this server made to api.programmablevouchers.com, with the status and how long it took. Nothing is added by hand.</p>
   <div class="log" id="log"></div>
