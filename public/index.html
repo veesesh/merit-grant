@@ -87,9 +87,8 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
 .vb .plain{font-size:var(--fs-sm);color:var(--ink);margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
 
 .verdict{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 9px;border-radius:6px;white-space:nowrap;border:1px solid transparent}
-.verdict.RELEASE,.verdict.APPROVE{background:var(--good);color:#fff}
-.verdict.HOLD,.verdict.ESCALATE,.verdict.SKIP,.verdict.DUPLICATE{background:var(--warn);color:#fff}
-.verdict.BLOCK{background:var(--bad);color:#fff}
+.verdict.RELEASE{background:var(--good);color:#fff}
+.verdict.HOLD,.verdict.SKIP,.verdict.DUPLICATE{background:var(--warn);color:#fff}
 
 .people{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.people{grid-template-columns:1fr}}
 .person{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;box-shadow:var(--sh);animation:rise .3s var(--e) both;transition:transform .16s var(--e),box-shadow .16s ease}
@@ -106,11 +105,6 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
 .money b{font-size:var(--fs-lg);font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .money span{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3)}
 
-.feed{display:flex;flex-direction:column;gap:8px;margin-top:11px}
-.row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 15px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;box-shadow:var(--sh);animation:rise .28s var(--e) both}
-.row .who{font-weight:500}
-.row .pill{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);margin-left:8px}
-.row .rs{font-size:var(--fs-sm);color:var(--ink2);margin-top:2px}
 
 .log{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 0;font-family:var(--mono);font-size:var(--fs-xs);max-height:220px;overflow:auto;box-shadow:var(--sh)}
 .log .ln{display:flex;gap:11px;align-items:baseline;padding:5px 16px}
@@ -137,7 +131,7 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
   <div class="status"><span class="hdot" id="hdot"></span><span id="htext">checking</span></div>
 </header>
 
-<p class="lede">Contributors earn funding by shipping real code. Paste any merged GitHub pull request and MeritGrant checks it against GitHub, then releases the next slice of a grant on <b>Vouch</b>. The money is purpose bound, so it can only be spent on approved developer tools.</p>
+<p class="lede">Contributors earn funding by shipping real code. Paste any merged GitHub pull request and MeritGrant checks it against GitHub, then releases the next slice of a grant on <b>Vouch</b>. Every check and every payout here is real.</p>
 
 <div class="steps">
   <div class="step" style="animation-delay:0ms"><div class="n">1</div><div class="h">Paste a merged PR</div><div class="d">Any public pull request. Use an example if you don't have one handy.</div></div>
@@ -170,11 +164,6 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
   <div class="people" id="people"></div>
   <div class="empty" id="nopeople" style="display:none">Nobody yet. Verify a pull request above and the author shows up here.</div>
 
-  <h2>Where the money can go</h2>
-  <p class="sect">Released credits are not cash. Try spending them and watch the rules apply: developer tools pass, anything else is blocked, and anything over $40 needs a human to sign off.</p>
-  <div class="bar" id="spendbar"></div>
-  <div class="feed" id="buys"></div>
-
   <h2>Every call to Vouch</h2>
   <p class="sect">Nothing here is staged. This is the live request log.</p>
   <div class="log" id="log"></div>
@@ -188,7 +177,7 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
 
 <script>
 const $=s=>document.querySelector(s);
-const ICON={RELEASE:"✓",HOLD:"⏸",SKIP:"⏸",DUPLICATE:"⏸",APPROVE:"✓",BLOCK:"✕",ESCALATE:"!"};
+const ICON={RELEASE:"✓",HOLD:"⏸",SKIP:"⏸",DUPLICATE:"⏸"};
 const stColor=s=>s<300?'ok':(s<500?'warn':'bad');
 async function post(path,body){const r=await fetch(path,{method:'POST',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});return r.json();}
 
@@ -219,9 +208,6 @@ function render(st){
       <div class="money"><b>$${c.released}</b><span>Vouch account ${c.tokenId||'…'}</span></div></div>`;
   }).join('');
   $('#nopeople').style.display=st.contributors.length?'none':'block';
-  $('#spendbar').innerHTML=st.buyOptions.map((b,i)=>`<button class="btn ghost sm" data-buy="${i}">Buy ${b.item} · $${b.amount}</button>`).join('');
-  document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>spend(+b.dataset.buy));
-  $('#buys').innerHTML=(st.buys||[]).slice().reverse().map((b,i)=>`<div class="row" style="animation-delay:${i*40}ms"><div><span class="who">${b.item}</span><span class="pill">${b.category}</span><div class="rs">${b.reason}</div></div><span class="verdict ${b.decision}">${ICON[b.decision]} ${b.decision}</span></div>`).join('')||'<div class="empty">Nothing bought yet. Try one of the buttons above.</div>';
   $('#log').innerHTML=(st.log||[]).slice().reverse().map(l=>`<div class="ln"><span class="st ${stColor(l.status)}">${l.status}</span><span class="lbl">${l.label}</span><span class="pa">${l.method} ${l.path}</span><span class="mt">${l.ms}ms</span></div>`).join('')||'<div class="ln"><span class="pa">No calls yet.</span></div>';
 }
 
@@ -257,7 +243,6 @@ $('#verify').onclick=async()=>{
   b.disabled=false;b.textContent='Verify';
 };
 document.querySelectorAll('[data-eg]').forEach(b=>b.onclick=()=>{$('#prurl').value=b.dataset.eg;$('#verify').click();});
-async function spend(i){render(await post('/api/spend',{index:i}));}
 $('#reset').onclick=async()=>{await post('/api/reset');boot();};
 
 // Set the program up automatically. Nobody should have to press a button

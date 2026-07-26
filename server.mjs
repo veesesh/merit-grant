@@ -2,7 +2,7 @@
 //
 // Paste a merged GitHub PR. The server verifies it against the live GitHub API
 // (merged, AI co-authored, real author profile), then enrols the author on Vouch
-// and releases a funding level. Every spend of released credits is guardrailed.
+// and releases a funding level.
 //
 // Vouch is the system of record: each milestone is a real oracle event, and the
 // whole dashboard rebuilds from those events after a restart.
@@ -33,18 +33,10 @@ const LADDER = [
   { level: 4, label: "Capstone", amount: 50 },
 ];
 const amtFor = (l) => LADDER.find(x => x.level === l)?.amount ?? 0;
-const GUARD = { allowed: ["CLOUD_COMPUTE", "AI_API", "DATA_TOOLS"], escalate_over: 40 };
-const BUY_OPTS = [
-  { item: "GPU hours", category: "CLOUD_COMPUTE", amount: 20 },
-  { item: "Claude API", category: "AI_API", amount: 18 },
-  { item: "Steam game", category: "GAMING", amount: 9 },
-  { item: "Big train run", category: "CLOUD_COMPUTE", amount: 80 },
-];
-const SEED = []; // no fake contributors — everyone is a real, PR-verified GitHub user
 
 let S = null;
 // credited: PRs already funded, keyed owner/repo#number. A PR can only ever pay once.
-const blank = () => ({ slug: null, oracleId: null, people: {}, buys: [], log: [], eventsRecorded: 0, credited: {} });
+const blank = () => ({ slug: null, oracleId: null, people: {}, log: [], eventsRecorded: 0, credited: {} });
 const prKey = (v) => `${v.owner}/${v.repo}#${v.number}`.toLowerCase();
 
 async function api(label, method, path, body, silent = false) {
@@ -114,7 +106,7 @@ async function ensurePerson({ id, name, github, verified }) {
   const suf = (Date.now() % 1000000000).toString();
   const phone = "+9198" + suf.slice(0, 8);
   const e = await api(`enrol ${name}`, "POST", `/programs/${S.slug}/enrol`, { phone, fields: { fullName: name, github } });
-  S.people[id] = { id, name, github, verified, level: 1, released: amtFor(1), tokenId: e.data?.beneficiary?.tokenId, token: e.data?.token || null, heldAtNext: false, prCount: 0, dynamic: !SEED.find(s => s.id === id) };
+  S.people[id] = { id, name, github, verified, level: 1, released: amtFor(1), tokenId: e.data?.beneficiary?.tokenId, heldAtNext: false };
   return S.people[id];
 }
 
@@ -146,15 +138,15 @@ async function restoreCredited() {
     const p = payloadOf(e);
     const key = p.prKey || (p.repo && p.pr != null ? `${p.repo}#${p.pr}`.toLowerCase() : null);
     if (key && !S.credited[key]) {
-      S.credited[key] = { author: p.github || "someone", decision: String(p.decision || "release").toLowerCase(), restored: true };
+      S.credited[key] = { author: p.github || "someone", decision: String(p.decision || "release").toLowerCase() };
       nPr++;
     }
     const id = p.contributor || (p.github ? "gh_" + String(p.github).toLowerCase() : null);
     if (id && p.github && p.level != null && !S.people[id]) {
       S.people[id] = {
         id, name: p.name || p.github, github: p.github, verified: p.verified !== false,
-        level: p.level, released: p.released ?? amtFor(1), tokenId: p.tokenId, token: null,
-        heldAtNext: !!p.heldNext, prCount: 0, dynamic: true, restored: true,
+        level: p.level, released: p.released ?? amtFor(1), tokenId: p.tokenId,
+        heldAtNext: !!p.heldNext,
       };
       nPeople++;
     }
@@ -212,7 +204,6 @@ async function releasePR({ verify: v }) {
   }
   const id = "gh_" + v.author.toLowerCase();
   const person = await ensurePerson({ id, name: v.author, github: v.author, verified: v.profileOk });
-  person.prCount++;
   const r = await releaseFor(person, v, v.aiCoauthor);
   v.decision = r.decision; v.reason = r.reason;
   S.credited[key] = { author: v.author, decision: r.decision, level: person.level };
@@ -224,28 +215,17 @@ async function checkPR({ url }) {
   return releasePR({ verify: v });
 }
 
-async function spend({ index }) {
-  await ensureProgram();
-  const b = BUY_OPTS[index]; if (!b) return view();
-  let decision, reason;
-  if (!GUARD.allowed.includes(b.category)) { decision = "BLOCK"; reason = `'${b.category}' not an approved dev-tool category`; }
-  else if (b.amount > GUARD.escalate_over) { decision = "ESCALATE"; reason = `$${b.amount} over $${GUARD.escalate_over}, needs human sign-off`; }
-  else { decision = "APPROVE"; reason = "Within policy"; }
-  const anyTok = Object.values(S.people).find(p => p.token)?.token;
-  if (anyTok) await api("verify (gate)", "POST", "/verify", { token: anyTok });
-  S.buys.push({ ...b, decision, reason });
-  return view();
-}
-
 function view() {
   if (!S || !S.slug) return { contributors: null };
-  const people = Object.values(S.people).map(p => ({ id: p.id, name: p.name, github: p.github, verified: p.verified, tokenId: p.tokenId, level: p.level, released: p.released, heldNext: p.heldAtNext ? p.level + 1 : 0, dynamic: p.dynamic }));
+  const people = Object.values(S.people).map(p => ({ id: p.id, name: p.name, github: p.github, verified: p.verified, tokenId: p.tokenId, level: p.level, released: p.released, heldNext: p.heldAtNext ? p.level + 1 : 0 }));
   return {
-    ladder: LADDER, buyOptions: BUY_OPTS, contributors: people, buys: S.buys, log: S.log.slice(-40),
-    summary: { contributors: people.length, levels_released: people.reduce((a, c) => a + (c.level - 1), 0),
+    ladder: LADDER, contributors: people, log: S.log.slice(-40),
+    summary: {
+      contributors: people.length,
       total_released: people.reduce((a, c) => a + c.released, 0),
-      held: S.buys.filter(b => b.decision !== "APPROVE").length + people.filter(c => c.heldNext).length,
-      vouch_events: S.eventsRecorded },
+      held: people.filter(c => c.heldNext).length,
+      vouch_events: S.eventsRecorded,
+    },
   };
 }
 
@@ -262,7 +242,6 @@ const server = http.createServer(async (req, res) => {
       if (req.url === "/api/verify-pr") return send(await verifyOnly(body));
       if (req.url === "/api/release-pr") return send(await releasePR(body));
       if (req.url === "/api/check-pr") return send(await checkPR(body));
-      if (req.url === "/api/spend") return send(await spend(body));
       if (req.url === "/webhook/github") {
         const pr = body.pull_request;
         if (body.action === "closed" && pr && pr.merged) {

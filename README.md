@@ -1,6 +1,6 @@
 # MeritGrant
 
-Contribution-verified grants. Contributors earn AI credits by shipping real work: paste a merged GitHub PR, and if it checks out, the author is enrolled on [Vouch](https://api.programmablevouchers.com) and the next funding level is released. Every spend of those credits is guardrailed.
+Contribution-verified grants. Contributors earn funding by shipping real work: paste a merged GitHub PR, and if it checks out, the author is enrolled on [Vouch](https://api.programmablevouchers.com) and the next funding level is released.
 
 Nothing is mocked. The PR checks hit the live GitHub API, and the funding runs against the live Vouch API.
 
@@ -24,10 +24,6 @@ The author is enrolled as a Vouch beneficiary, the milestone is recorded as a re
 | 2 | First PR | $20 |
 | 3 | 3 PRs | $30 |
 | 4 | Capstone | $50 |
-
-**3. Constrain the spend**
-
-Released credits are purpose-bound. Approved dev categories (`CLOUD_COMPUTE`, `AI_API`, `DATA_TOOLS`) pass, anything else is blocked, and amounts over $40 escalate for human sign-off.
 
 ## Design notes
 
@@ -63,10 +59,11 @@ Instead of pasting URLs, point a repo webhook at `POST /webhook/github` with con
 | `POST /api/verify-pr` | GitHub checks only, no writes |
 | `POST /api/release-pr` | Enrol on Vouch and release a level |
 | `POST /api/check-pr` | Both phases in one call |
-| `POST /api/spend` | Run a spend against the guardrail |
 | `GET /api/state` | Current program state |
 | `GET /api/health` | Vouch connectivity |
 
 ## Scope
 
-The PR verification and the funding path are real end to end. The spend guardrail is illustrative: the decision logic runs in this app rather than on Vouch, because metered spend sits behind a scope that is not enabled on the sandbox key.
+Everything in the app is real: the PR checks hit the GitHub API, and enrolment, the milestone ledger, and the audit trail all run on Vouch.
+
+Two pieces are deliberately absent because the sandbox key cannot reach them. The level ladder lives in this app rather than in a Vouch **policy** (`team_mismatch` on policy creation), and there is no metered spend, which needs the `ai_compute` scope. Both are scope unlocks, not missing work.
