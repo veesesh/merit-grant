@@ -1,0 +1,216 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MeritGrant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfbfa;--panel:#ffffff;--sunk:#f6f6f5;
+  --ink:#1c1c1a;--ink2:#5c5c58;--ink3:#a3a39d;
+  --line:#e8e8e5;--line2:#d9d9d5;
+  --brand:#1d63d1;--brand-hover:#1854b4;
+  --accent:#1d63d1;--accent-soft:#e6eefc;
+  --good:#127a48;--good-bg:#eefaf3;--good-line:#bfe8d3;
+  --warn:#9a5b06;--warn-bg:#fdf6e9;--warn-line:#f0dcb4;
+  --bad:#b02020;--bad-bg:#fdf0ef;--bad-line:#f3cdc9;
+  --sans:"Geist",system-ui,-apple-system,sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  --sh:0 1px 2px rgba(28,28,26,.05);
+  --sh-lift:0 6px 16px rgba(28,28,26,.09);
+  --e:cubic-bezier(0.215,0.61,0.355,1);
+  --fs-lg:26px;--fs-md:16px;--fs-base:15px;--fs-sm:13px;--fs-xs:11px;
+  --r:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:var(--fs-base);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 22px 96px}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:22px 0;margin-bottom:26px;border-bottom:1px solid var(--line)}
+.brand b{font-size:var(--fs-md);font-weight:600;letter-spacing:-.015em;display:block}
+.brand .sub{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3)}
+.status{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink2);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+.hdot{width:7px;height:7px;border-radius:50%;background:var(--ink3)}
+.hdot.ok{background:var(--good)}.hdot.bad{background:var(--bad)}
+
+.lede{color:var(--ink2);max-width:66ch;margin:0 0 22px}.lede b{color:var(--ink);font-weight:500}
+h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin:34px 0 12px}
+
+/* buttons */
+.btn{font:inherit;font-size:var(--fs-sm);font-weight:500;border:1px solid var(--brand);border-radius:9px;padding:9px 17px;cursor:pointer;background:var(--brand);color:#fff;transition:background .15s ease,transform .1s var(--e),box-shadow .15s ease,border-color .15s ease,color .15s ease}
+.btn:hover{background:var(--brand-hover);border-color:var(--brand-hover);box-shadow:var(--sh-lift)}
+.btn:active{transform:scale(.975)}
+.btn:focus-visible{outline:0;box-shadow:0 0 0 3px var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.btn.ghost{background:var(--panel);color:var(--ink2);border-color:var(--line2);box-shadow:var(--sh)}
+.btn.ghost:hover{background:var(--panel);color:var(--ink);border-color:var(--ink3);box-shadow:var(--sh-lift)}
+.btn.sm{padding:7px 12px}
+.bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+@media(max-width:620px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--panel);padding:15px 17px;animation:rise .3s var(--e) both}
+.tile .k{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.04em;color:var(--ink3)}
+.tile .v{font-size:var(--fs-lg);font-weight:500;margin-top:5px;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.tile.accent .v{color:var(--accent)}.tile.good .v{color:var(--good)}.tile.warn .v{color:var(--warn)}
+
+/* verify panel */
+.prv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--sh);animation:rise .3s var(--e) both}
+.prv-in{display:flex;gap:9px;flex-wrap:wrap}
+.prv-in input{flex:1;min-width:250px;font-family:var(--mono);font-size:var(--fs-sm);background:var(--sunk);border:1px solid var(--line2);border-radius:9px;padding:10px 13px;color:var(--ink);transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
+.prv-in input::placeholder{color:var(--ink3)}
+.prv-in input:focus{outline:0;background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.checks{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0 0}
+.chk{font-family:var(--mono);font-size:var(--fs-xs);padding:5px 10px;border-radius:7px;border:1px solid var(--line);background:var(--sunk);color:var(--ink3);animation:pop .26s var(--e) both}
+.chk.y{background:var(--good-bg);color:var(--good);border-color:var(--good-line)}
+.chk.n{background:var(--bad-bg);color:var(--bad);border-color:var(--bad-line)}
+.vb{margin-top:13px;background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:13px 15px;animation:rise .28s var(--e) both}
+.vb.RELEASE{background:var(--good-bg);border-color:var(--good-line)}
+.vb.HOLD,.vb.SKIP,.vb.DUPLICATE{background:var(--warn-bg);border-color:var(--warn-line)}
+.vb.err{background:var(--bad-bg);border-color:var(--bad-line)}
+.vb .t{font-weight:500}.vb .t a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line2)}
+.vb .t a:hover{border-color:var(--ink)}
+.vb .meta{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);margin-top:4px}
+.vb .rs{font-size:var(--fs-sm);color:var(--ink2);margin-top:10px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.hint{font-size:var(--fs-xs);color:var(--ink3);margin:12px 0 0;font-family:var(--mono);line-height:1.6}
+
+/* verdict */
+.verdict{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 9px;border-radius:6px;white-space:nowrap;border:1px solid transparent}
+.verdict.RELEASE,.verdict.APPROVE{background:var(--good);color:#fff}
+.verdict.HOLD,.verdict.ESCALATE,.verdict.SKIP,.verdict.DUPLICATE{background:var(--warn);color:#fff}
+.verdict.BLOCK{background:var(--bad);color:#fff}
+
+/* contributors */
+.people{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.people{grid-template-columns:1fr}}
+.person{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;box-shadow:var(--sh);animation:rise .3s var(--e) both;transition:transform .16s var(--e),box-shadow .16s ease}
+.phead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.person .nm{font-weight:500}
+.person .gh{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);display:block;margin-top:1px}
+.badge{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 7px;border-radius:5px;white-space:nowrap}
+.badge.ok{background:var(--good-bg);color:var(--good)}.badge.no{background:var(--bad-bg);color:var(--bad)}
+.track{display:flex;gap:4px;margin:16px 0 9px}
+.seg{flex:1;height:5px;border-radius:3px;background:var(--line);transition:background .4s var(--e)}
+.seg.done{background:var(--good)}.seg.held{background:var(--warn)}
+.money{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.money b{font-size:var(--fs-lg);font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.money span{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3)}
+
+/* spend feed */
+.feed{display:flex;flex-direction:column;gap:8px;margin-top:11px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 15px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;box-shadow:var(--sh);animation:rise .28s var(--e) both}
+.row .who{font-weight:500}
+.row .pill{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);margin-left:8px}
+.row .rs{font-size:var(--fs-sm);color:var(--ink2);margin-top:2px}
+
+/* log */
+.log{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 0;font-family:var(--mono);font-size:var(--fs-xs);max-height:220px;overflow:auto;box-shadow:var(--sh)}
+.log .ln{display:flex;gap:11px;align-items:baseline;padding:5px 16px}
+.log .ln+.ln{border-top:1px solid var(--line)}
+.st{min-width:26px}.st.ok{color:var(--good)}.st.warn{color:var(--warn)}.st.bad{color:var(--bad)}
+.log .lbl{color:var(--ink);min-width:112px}.log .pa{color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log .mt{color:var(--ink3);margin-left:auto}
+.muted{color:var(--ink3);font-size:var(--fs-sm)}
+.empty{background:var(--panel);border:1px dashed var(--line2);border-radius:var(--r);padding:22px;text-align:center;color:var(--ink3);font-size:var(--fs-sm)}
+
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@media(hover:hover) and (pointer:fine){.person:hover{transform:translateY(-2px);box-shadow:var(--sh-lift)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><div class="wrap">
+
+<header>
+  <div class="brand"><div><b>MeritGrant</b><span class="sub">api.programmablevouchers.com</span></div></div>
+  <div class="status"><span class="hdot" id="hdot"></span><span id="htext">checking</span></div>
+</header>
+
+<p class="lede">Paste a merged GitHub PR. The server verifies it against the <b>live GitHub API</b> (merged, AI co-authored, real author), then enrols the author on <b>Vouch</b> and releases a funding level. Everything here is real.</p>
+
+<div class="bar">
+  <button class="btn" id="setup">Initialize program</button>
+  <button class="btn ghost" id="reset">Reset</button>
+</div>
+
+<div id="app" style="display:none">
+  <h2>Program</h2><div class="kpis" id="kpis"></div>
+
+  <h2>Verify a real PR</h2>
+  <div class="prv">
+    <div class="prv-in"><input id="prurl" placeholder="https://github.com/owner/repo/pull/123"><button class="btn" id="verify">Verify</button></div>
+    <div id="verifybox"></div>
+    <p class="hint">merged · AI co-author (codex, claude, copilot) · author profile<br>all three pass, the author is enrolled on Vouch and a level is released</p>
+  </div>
+
+  <h2>Funded contributors</h2>
+  <div class="people" id="people"></div>
+  <div class="empty" id="nopeople" style="display:none">Verify a real PR above and the author appears here, funded on Vouch.</div>
+
+  <h2>Spend guardrail</h2>
+  <div class="bar" id="spendbar"></div>
+  <div class="feed" id="buys"></div>
+
+  <h2>Vouch API calls</h2><div class="log" id="log"></div>
+</div>
+
+<div class="empty" id="empty" style="margin-top:24px">Click <b>Initialize program</b> to create it on the live Vouch sandbox, then verify a real PR.</div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const ICON={RELEASE:"✓",HOLD:"⏸",SKIP:"⏸",DUPLICATE:"⏸",APPROVE:"✓",BLOCK:"✕",ESCALATE:"!"};
+const stColor=s=>s<300?'ok':(s<500?'warn':'bad');
+async function post(path,body){const r=await fetch(path,{method:'POST',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});return r.json();}
+
+async function health(){try{const j=await(await fetch('/api/health')).json();$('#hdot').className='hdot '+(j.ok?'ok':'bad');$('#htext').textContent=j.ok?'Live':'Offline';}catch(e){$('#hdot').className='hdot bad';$('#htext').textContent='Offline';}}
+health();setInterval(health,15000);
+
+function render(st){
+  if(!st||!st.contributors){$('#app').style.display='none';$('#empty').style.display='block';return;}
+  $('#app').style.display='block';$('#empty').style.display='none';
+  const s=st.summary;
+  $('#kpis').innerHTML=[['Contributors',s.contributors,''],['Released','$'+s.total_released,'accent'],['Vouch events',s.vouch_events,'good'],['Held',s.held,'warn']]
+    .map((a,i)=>`<div class="tile ${a[2]}" style="animation-delay:${i*40}ms"><div class="k">${a[0]}</div><div class="v">${a[1]}</div></div>`).join('');
+  $('#people').innerHTML=st.contributors.map((c,i)=>{
+    const track=st.ladder.map(l=>`<div class="seg ${l.level<=c.level?'done':(l.level===c.heldNext?'held':'')}"></div>`).join('');
+    return `<div class="person" style="animation-delay:${i*50}ms">
+      <div class="phead"><div><span class="nm">${c.name}</span><span class="gh">@${c.github}</span></div><span class="badge ${c.verified?'ok':'no'}">${c.verified?'verified':'unverified'}</span></div>
+      <div class="track">${track}</div>
+      <div class="money"><b>$${c.released}</b><span>level ${c.level} · token ${c.tokenId||'…'}</span></div></div>`;
+  }).join('');
+  $('#nopeople').style.display=st.contributors.length?'none':'block';
+  $('#spendbar').innerHTML=st.buyOptions.map((b,i)=>`<button class="btn ghost sm" data-buy="${i}">${b.item} · $${b.amount}</button>`).join('');
+  document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>spend(+b.dataset.buy));
+  $('#buys').innerHTML=(st.buys||[]).slice().reverse().map((b,i)=>`<div class="row" style="animation-delay:${i*40}ms"><div><span class="who">${b.item}</span><span class="pill">${b.category}</span><div class="rs">${b.reason}</div></div><span class="verdict ${b.decision}">${ICON[b.decision]} ${b.decision}</span></div>`).join('')||'<div class="empty">No spend attempts yet.</div>';
+  $('#log').innerHTML=(st.log||[]).slice().reverse().map(l=>`<div class="ln"><span class="st ${stColor(l.status)}">${l.status}</span><span class="lbl">${l.label}</span><span class="pa">${l.method} ${l.path}</span><span class="mt">${l.ms}ms</span></div>`).join('')||'<div class="ln"><span class="pa">No calls yet.</span></div>';
+}
+
+$('#setup').onclick=async()=>{const b=$('#setup');b.disabled=true;b.textContent='Initializing';render(await post('/api/setup'));b.disabled=false;b.textContent='Initialize program';health();};
+$('#reset').onclick=async()=>{render(await post('/api/reset'));};
+
+function renderVerify(v){
+  const box=$('#verifybox');if(!v){box.innerHTML='';return;}
+  if(!v.ok){box.innerHTML=`<div class="vb err"><div class="t">Couldn't verify</div><div class="rs">${v.reason}</div></div>`;return;}
+  const chk=(ok,y,n,i)=>`<span class="chk ${ok?'y':'n'}" style="animation-delay:${i*70}ms">${ok?'✓ '+y:'✕ '+n}</span>`;
+  const dec=v.decision||'HOLD';
+  box.innerHTML=`<div class="checks">
+      ${chk(v.merged,'merged','not merged',0)}
+      ${chk(v.aiCoauthor,'AI co-author'+(v.aiTool?' · '+v.aiTool:''),'no AI co-author',1)}
+      ${chk(v.profileOk,'profile · '+v.profile.ageDays+'d · '+v.profile.public_repos+' repos','profile weak',2)}
+    </div>
+    <div class="vb ${dec}"><div class="t"><a href="https://github.com/${v.owner}/${v.repo}/pull/${v.number}" target="_blank">${v.owner}/${v.repo} #${v.number}</a></div>
+      <div class="meta">${v.title||''} · @${v.author}</div>
+      <div class="rs"><span class="verdict ${dec}">${ICON[dec]||'⏸'} ${dec}</span> ${v.reason}</div></div>`;
+}
+$('#verify').onclick=async()=>{
+  const url=$('#prurl').value.trim();if(!url)return;
+  const b=$('#verify');b.disabled=true;b.textContent='Checking';
+  $('#verifybox').innerHTML='<div class="vb"><div class="rs">Contacting GitHub</div></div>';
+  const v=await post('/api/verify-pr',{url});
+  renderVerify(v);
+  if(!v.ok||!v.merged||v.duplicate){b.disabled=false;b.textContent='Verify';return;}
+  b.textContent='Recording';
+  const vb=$('#verifybox').querySelector('.vb');if(vb){vb.querySelector('.rs').innerHTML='<span class="verdict HOLD">recording</span> enrolling on Vouch and ingesting the milestone';}
+  const out=await post('/api/release-pr',{verify:v});
+  renderVerify(out.verify);render(out.state);health();
+  b.disabled=false;b.textContent='Verify';
+};
+async function spend(i){render(await post('/api/spend',{index:i}));}
+(async()=>{try{render(await(await fetch('/api/state')).json());}catch(e){}})();
+</script></body></html>

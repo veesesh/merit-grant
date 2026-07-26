@@ -1,0 +1,21 @@
+{
+  "name": "merit-grant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Contribution-verified grants: merged GitHub PRs unlock funding levels on Vouch",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "vouch",
+    "grants",
+    "github",
+    "purpose-bound-money"
+  ],
+  "license": "MIT"
+}
