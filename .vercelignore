@@ -1,0 +1,10 @@
+# Only the dashboard (public/) and the proxy (api/) belong on Vercel.
+#
+# The backend runs on its own server. If Vercel can see server.mjs or
+# package.json it auto-detects a Node server project and tries to boot the
+# backend as a function, which fails since VOUCH_API_KEY only exists on the
+# real host. Hiding them makes this a plain static + functions deployment.
+server.mjs
+package.json
+scripts/
+.env.example

@@ -10,8 +10,13 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "BACKEND_URL is not set on this deployment" });
   }
 
-  const parts = req.query.path;
-  const path = Array.isArray(parts) ? parts.join("/") : String(parts || "");
+  // Derive the path from the request URL rather than req.query, which is not
+  // always populated for catch-all routes in a zero-config deployment.
+  let path = String(req.url || "").split("?")[0].replace(/^\/+api\/?/, "");
+  if (!path) {
+    const parts = req.query?.path;
+    path = Array.isArray(parts) ? parts.join("/") : String(parts || "");
+  }
   const target = `${base.replace(/\/+$/, "")}/api/${path}`;
 
   try {

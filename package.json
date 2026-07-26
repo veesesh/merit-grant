@@ -4,7 +4,6 @@
   "private": true,
   "description": "Contribution-verified grants: merged GitHub PRs unlock funding levels on Vouch",
   "type": "module",
-  "main": "server.mjs",
   "scripts": {
     "start": "node server.mjs"
   },
