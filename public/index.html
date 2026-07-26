@@ -1,159 +1,173 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MeritGrant</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MeritGrant — funding that unlocks when you ship</title>
+<meta name="description" content="Contributors earn funding by shipping real code. Paste a merged GitHub pull request and MeritGrant verifies it, then releases the next level of a grant on Vouch.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="%23d97757"/><g fill="%231a1a19"><rect x="6.5" y="18" width="5" height="7.5" rx="1.6"/><rect x="13.5" y="13" width="5" height="12.5" rx="1.6"/><rect x="20.5" y="6.5" width="5" height="19" rx="1.6"/></g></svg>'>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#fbfbfa;--panel:#ffffff;--sunk:#f6f6f5;
-  --ink:#1c1c1a;--ink2:#5c5c58;--ink3:#a3a39d;
-  --line:#e8e8e5;--line2:#d9d9d5;
-  --brand:#1d63d1;--brand-hover:#1854b4;
-  --accent:#1d63d1;--accent-soft:#e6eefc;
-  --good:#127a48;--good-bg:#eefaf3;--good-line:#bfe8d3;
-  --warn:#9a5b06;--warn-bg:#fdf6e9;--warn-line:#f0dcb4;
-  --bad:#b02020;--bad-bg:#fdf0ef;--bad-line:#f3cdc9;
+  --bg:#000;--panel:#0b0b0a;--sunk:#ede8df08;
+  --fg:#ede8df;--fg2:#ede8dfa8;--fg3:#ede8df5c;
+  --line:#ede8df14;--line2:#ede8df26;
+  --accent:#d97757;--accent-dim:#d9775726;--accent-hover:#e0876b;
+  --good:#6bbf8e;--good-bg:#6bbf8e1a;--good-line:#6bbf8e40;
+  --warn:#d9a441;--warn-bg:#d9a4411a;--warn-line:#d9a44140;
+  --bad:#ff5050;--bad-bg:#ff50501a;--bad-line:#ff505040;
   --sans:"Geist",system-ui,-apple-system,sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
-  --sh:0 1px 2px rgba(28,28,26,.05);
-  --sh-lift:0 6px 16px rgba(28,28,26,.09);
-  --e:cubic-bezier(0.215,0.61,0.355,1);
-  --fs-lg:26px;--fs-md:16px;--fs-base:15px;--fs-sm:13px;--fs-xs:11px;
+  --e:cubic-bezier(.4,0,.2,1);
+  --fs-xl:28px;--fs-md:16px;--fs-base:15px;--fs-sm:13px;--fs-xs:11px;
   --r:12px;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:var(--fs-base);line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:900px;margin:0 auto;padding:0 22px 96px}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:var(--fs-base);line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px 110px}
+a{color:inherit}
 
-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:22px 0;margin-bottom:24px;border-bottom:1px solid var(--line)}
-.brand b{font-size:var(--fs-md);font-weight:600;letter-spacing:-.015em;display:block}
-.brand .sub{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3)}
-.status{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink2);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
-.hdot{width:7px;height:7px;border-radius:50%;background:var(--ink3)}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:26px 0;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:26px;height:26px;border-radius:7px;background:var(--accent);display:block;flex:none;position:relative}
+.mark i{position:absolute;bottom:6px;background:#1a1a19;border-radius:1.4px;display:block}
+.mark i:nth-child(1){left:5px;width:4px;height:6px}
+.mark i:nth-child(2){left:11px;width:4px;height:10px}
+.mark i:nth-child(3){left:17px;width:4px;height:15px}
+.brand b{font-size:var(--fs-md);font-weight:500;letter-spacing:-.01em}
+.status{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.hdot{width:6px;height:6px;border-radius:50%;background:var(--fg3)}
 .hdot.ok{background:var(--good)}.hdot.bad{background:var(--bad)}
 
-.lede{color:var(--ink2);max-width:64ch;margin:0 0 20px}
-.lede b{color:var(--ink);font-weight:500}
+.hero{padding:56px 0 44px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:var(--fs-xl);font-weight:500;letter-spacing:-.025em;margin:0 0 14px;line-height:1.25;max-width:20ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--fg2);max-width:60ch;margin:0}
 
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:30px}
+.eyebrow{font-family:var(--mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin:60px 0 10px}
+.headline{font-size:var(--fs-md);font-weight:500;letter-spacing:-.01em;margin:0 0 6px}
+.sect{font-size:var(--fs-sm);color:var(--fg2);margin:0 0 18px;max-width:66ch}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 @media(max-width:680px){.steps{grid-template-columns:1fr}}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);animation:rise .3s var(--e) both}
-.step .n{width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-family:var(--mono);font-size:var(--fs-xs);display:grid;place-items:center;margin-bottom:9px}
-.step .h{font-weight:500;margin-bottom:2px}
-.step .d{font-size:var(--fs-sm);color:var(--ink2)}
+.step{background:var(--panel);padding:18px 20px;animation:rise .35s var(--e) both}
+.step .n{font-family:var(--mono);font-size:var(--fs-xs);color:var(--accent);margin-bottom:12px}
+.step .h{font-weight:500;margin-bottom:3px}
+.step .d{font-size:var(--fs-sm);color:var(--fg2)}
 
-h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin:32px 0 4px}
-.sect{font-size:var(--fs-sm);color:var(--ink2);margin:0 0 12px;max-width:70ch}
-
-.btn{font:inherit;font-size:var(--fs-sm);font-weight:500;border:1px solid var(--brand);border-radius:9px;padding:10px 18px;cursor:pointer;background:var(--brand);color:#fff;transition:background .15s ease,transform .1s var(--e),box-shadow .15s ease,border-color .15s ease,color .15s ease}
-.btn:hover{background:var(--brand-hover);border-color:var(--brand-hover);box-shadow:var(--sh-lift)}
+.btn{font:inherit;font-size:var(--fs-sm);font-weight:500;border:1px solid var(--accent);border-radius:9px;padding:10px 20px;cursor:pointer;background:var(--accent);color:#1a1a19;transition:background .15s var(--e),border-color .15s var(--e),transform .1s var(--e),opacity .15s var(--e)}
+.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
 .btn:active{transform:scale(.975)}
-.btn:focus-visible{outline:0;box-shadow:0 0 0 3px var(--accent-soft)}
-.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
-.btn.ghost{background:var(--panel);color:var(--ink2);border-color:var(--line2);box-shadow:var(--sh)}
-.btn.ghost:hover{background:var(--panel);color:var(--ink);border-color:var(--ink3);box-shadow:var(--sh-lift)}
-.btn.sm{padding:7px 12px}
-.bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.btn:focus-visible{outline:0;box-shadow:0 0 0 3px var(--accent-dim)}
+.btn:disabled{opacity:.5;cursor:default;transform:none}
+.btn.ghost{background:transparent;color:var(--fg2);border-color:var(--line2)}
+.btn.ghost:hover{background:var(--sunk);color:var(--fg);border-color:var(--fg3)}
 
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 @media(max-width:620px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.tile{background:var(--panel);padding:15px 17px;animation:rise .3s var(--e) both}
-.tile .k{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.04em;color:var(--ink3)}
-.tile .v{font-size:var(--fs-lg);font-weight:500;margin-top:5px;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.tile{background:var(--panel);padding:17px 20px;animation:rise .35s var(--e) both}
+.tile .k{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;color:var(--fg3)}
+.tile .v{font-size:var(--fs-xl);font-weight:500;margin-top:7px;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1}
 .tile.accent .v{color:var(--accent)}.tile.good .v{color:var(--good)}.tile.warn .v{color:var(--warn)}
 
-.prv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--sh);animation:rise .3s var(--e) both}
-.prv-in{display:flex;gap:9px;flex-wrap:wrap}
-.prv-in input{flex:1;min-width:250px;font-family:var(--mono);font-size:var(--fs-sm);background:var(--sunk);border:1px solid var(--line2);border-radius:9px;padding:10px 13px;color:var(--ink);transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
-.prv-in input::placeholder{color:var(--ink3)}
-.prv-in input:focus{outline:0;background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.egs{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:13px}
-.egs .lb{font-size:var(--fs-sm);color:var(--ink3)}
-.eg{font:inherit;font-size:var(--fs-sm);background:var(--sunk);border:1px solid var(--line2);color:var(--ink2);border-radius:999px;padding:5px 12px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease,transform .1s var(--e)}
-.eg:hover{background:var(--panel);color:var(--ink);border-color:var(--ink3)}
+.prv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;animation:rise .35s var(--e) both}
+.prv-in{display:flex;gap:10px;flex-wrap:wrap}
+.prv-in input{flex:1;min-width:250px;font-family:var(--mono);font-size:var(--fs-sm);background:#000;border:1px solid var(--line2);border-radius:9px;padding:11px 14px;color:var(--fg);transition:border-color .15s var(--e),box-shadow .15s var(--e)}
+.prv-in input::placeholder{color:var(--fg3)}
+.prv-in input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.egs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.egs .lb{font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3);text-transform:uppercase;letter-spacing:.08em}
+.eg{font:inherit;font-size:var(--fs-sm);background:transparent;border:1px solid var(--line2);color:var(--fg2);border-radius:999px;padding:5px 13px;cursor:pointer;transition:background .15s var(--e),color .15s var(--e),border-color .15s var(--e),transform .1s var(--e)}
+.eg:hover{background:var(--sunk);color:var(--fg);border-color:var(--fg3)}
 .eg:active{transform:scale(.97)}
-.eg .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.eg .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:middle}
 .eg .dot.p{background:var(--good)}.eg .dot.h{background:var(--warn)}
 
-.checks{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 0}
-.chk{font-family:var(--mono);font-size:var(--fs-xs);padding:5px 10px;border-radius:7px;border:1px solid var(--line);background:var(--sunk);color:var(--ink3);animation:pop .26s var(--e) both}
+.checks{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 0}
+.chk{font-family:var(--mono);font-size:var(--fs-xs);padding:6px 11px;border-radius:7px;border:1px solid var(--line2);color:var(--fg3);animation:pop .26s var(--e) both}
 .chk.y{background:var(--good-bg);color:var(--good);border-color:var(--good-line)}
 .chk.n{background:var(--bad-bg);color:var(--bad);border-color:var(--bad-line)}
-.vb{margin-top:13px;background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:13px 15px;animation:rise .28s var(--e) both}
+.vb{margin-top:14px;border:1px solid var(--line2);border-radius:10px;padding:14px 16px;animation:rise .28s var(--e) both}
 .vb.RELEASE{background:var(--good-bg);border-color:var(--good-line)}
 .vb.HOLD,.vb.SKIP,.vb.DUPLICATE{background:var(--warn-bg);border-color:var(--warn-line)}
 .vb.err{background:var(--bad-bg);border-color:var(--bad-line)}
-.vb .t{font-weight:500}.vb .t a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line2)}
-.vb .t a:hover{border-color:var(--ink)}
-.vb .meta{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);margin-top:4px}
-.vb .rs{font-size:var(--fs-sm);color:var(--ink2);margin-top:10px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-.vb .plain{font-size:var(--fs-sm);color:var(--ink);margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
+.vb .t{font-weight:500}
+.vb .t a{text-decoration:none;border-bottom:1px solid var(--line2)}
+.vb .t a:hover{border-color:var(--fg)}
+.vb .meta{font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3);margin-top:5px}
+.vb .rs{font-size:var(--fs-sm);color:var(--fg2);margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vb .plain{font-size:var(--fs-sm);margin-top:12px;padding-top:12px;border-top:1px solid var(--line2)}
 
-.verdict{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 9px;border-radius:6px;white-space:nowrap;border:1px solid transparent}
-.verdict.RELEASE{background:var(--good);color:#fff}
-.verdict.HOLD,.verdict.SKIP,.verdict.DUPLICATE{background:var(--warn);color:#fff}
+.verdict{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 9px;border-radius:6px;white-space:nowrap;color:#1a1a19}
+.verdict.RELEASE{background:var(--good)}
+.verdict.HOLD,.verdict.SKIP,.verdict.DUPLICATE{background:var(--warn)}
 
 .people{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.people{grid-template-columns:1fr}}
-.person{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;box-shadow:var(--sh);animation:rise .3s var(--e) both;transition:transform .16s var(--e),box-shadow .16s ease}
+.person{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 19px;animation:rise .35s var(--e) both;transition:border-color .18s var(--e),transform .18s var(--e)}
 .phead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .person .nm{font-weight:500}
-.person .gh{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);display:block;margin-top:1px}
-.badge{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 7px;border-radius:5px;white-space:nowrap}
+.person .gh{font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3);display:block;margin-top:2px}
+.badge{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 8px;border-radius:5px;white-space:nowrap}
 .badge.ok{background:var(--good-bg);color:var(--good)}.badge.no{background:var(--bad-bg);color:var(--bad)}
-.track{display:flex;gap:4px;margin:16px 0 6px}
-.seg{flex:1;height:5px;border-radius:3px;background:var(--line);transition:background .4s var(--e)}
+.track{display:flex;gap:4px;margin:18px 0 7px}
+.seg{flex:1;height:4px;border-radius:2px;background:var(--line2);transition:background .45s var(--e)}
 .seg.done{background:var(--good)}.seg.held{background:var(--warn)}
-.tracklb{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3);margin-bottom:10px}
+.tracklb{font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3);margin-bottom:12px}
 .money{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.money b{font-size:var(--fs-lg);font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.money span{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3)}
-.prlist{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.prlb{font-size:var(--fs-xs);color:var(--ink3);width:100%;margin-bottom:2px}
-.prlink{font-family:var(--mono);font-size:var(--fs-xs);text-decoration:none;padding:3px 8px;border-radius:6px;border:1px solid var(--good-line);background:var(--good-bg);color:var(--good);transition:background .15s ease,border-color .15s ease}
-.prlink:hover{background:var(--panel);border-color:var(--good)}
+.money b{font-size:var(--fs-xl);font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.money span{font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3)}
+.prlist{margin-top:15px;padding-top:13px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px}
+.prlb{font-family:var(--mono);font-size:var(--fs-xs);color:var(--fg3);width:100%;margin-bottom:3px;text-transform:uppercase;letter-spacing:.08em}
+.prlink{font-family:var(--mono);font-size:var(--fs-xs);text-decoration:none;padding:3px 9px;border-radius:6px;border:1px solid var(--good-line);background:var(--good-bg);color:var(--good);transition:border-color .15s var(--e),background .15s var(--e)}
+.prlink:hover{border-color:var(--good);background:transparent}
 .prlink.HOLD{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn)}
-.prlink.HOLD:hover{border-color:var(--warn);background:var(--panel)}
+.prlink.HOLD:hover{border-color:var(--warn);background:transparent}
 
-
-.log{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 0;font-family:var(--mono);font-size:var(--fs-xs);max-height:220px;overflow:auto;box-shadow:var(--sh)}
-.log .ln{display:flex;gap:11px;align-items:baseline;padding:5px 16px}
+.log{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 0;font-family:var(--mono);font-size:var(--fs-xs);max-height:230px;overflow:auto}
+.log .ln{display:flex;gap:12px;align-items:baseline;padding:6px 18px}
 .log .ln+.ln{border-top:1px solid var(--line)}
 .st{min-width:26px}.st.ok{color:var(--good)}.st.warn{color:var(--warn)}.st.bad{color:var(--bad)}
-.log .lbl{color:var(--ink);min-width:112px}.log .pa{color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.log .mt{color:var(--ink3);margin-left:auto}
-.muted{color:var(--ink3);font-size:var(--fs-sm)}
-.empty{background:var(--panel);border:1px dashed var(--line2);border-radius:var(--r);padding:22px;text-align:center;color:var(--ink3);font-size:var(--fs-sm)}
-.foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
-.link{font:inherit;font-size:var(--fs-sm);background:none;border:0;color:var(--ink3);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
-.link:hover{color:var(--ink2)}
+.log .lbl{min-width:112px}.log .pa{color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log .mt{color:var(--fg3);margin-left:auto}
+.empty{border:1px dashed var(--line2);border-radius:var(--r);padding:26px;text-align:center;color:var(--fg3);font-size:var(--fs-sm)}
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--fg3)}
+.link{font:inherit;font-size:var(--fs-sm);background:none;border:0;color:var(--fg3);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--fg)}
 
-@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:8px}
-@media(hover:hover) and (pointer:fine){.person:hover{transform:translateY(-2px);box-shadow:var(--sh-lift)}}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:9px}
+@media(hover:hover) and (pointer:fine){.person:hover{border-color:var(--line2);transform:translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><div class="wrap">
 
 <header>
-  <div class="brand"><b>MeritGrant</b><span class="sub">grants that unlock when you ship</span></div>
+  <div class="brand"><span class="mark"><i></i><i></i><i></i></span><b>MeritGrant</b></div>
   <div class="status"><span class="hdot" id="hdot"></span><span id="htext">checking</span></div>
 </header>
 
-<p class="lede">Contributors earn funding by shipping real code. Paste any merged GitHub pull request and MeritGrant checks it against GitHub, then releases the next slice of a grant on <b>Vouch</b>. Every check and every payout here is real.</p>
-
-<div class="steps">
-  <div class="step" style="animation-delay:0ms"><div class="n">1</div><div class="h">Paste a merged PR</div><div class="d">Any public pull request. Use an example if you don't have one handy.</div></div>
-  <div class="step" style="animation-delay:50ms"><div class="n">2</div><div class="h">It gets checked</div><div class="d">Really merged, written with an AI tool, and by a genuine account.</div></div>
-  <div class="step" style="animation-delay:100ms"><div class="n">3</div><div class="h">Funding unlocks</div><div class="d">The author gets a Vouch account and the next level is released.</div></div>
+<div class="hero">
+  <h1>Funding that unlocks when you <em>ship</em>.</h1>
+  <p>Paste a merged GitHub pull request. MeritGrant checks it against GitHub, then releases the next level of a grant on Vouch. Every check and every payout here is real.</p>
 </div>
 
-<div id="boot" class="empty"><span class="spin"></span>Setting up the grant program on Vouch</div>
+<div class="eyebrow">How it works</div>
+<h2 class="headline">Three checks. Then the money moves.</h2>
+<p class="sect">Nobody is paid for showing up. Each level is earned by a merged pull request.</p>
+<div class="steps">
+  <div class="step" style="animation-delay:0ms"><div class="n">01</div><div class="h">Paste a merged PR</div><div class="d">Any public pull request. Use an example if you don't have one handy.</div></div>
+  <div class="step" style="animation-delay:60ms"><div class="n">02</div><div class="h">It gets verified</div><div class="d">Really merged, written with an AI tool, and by a genuine account.</div></div>
+  <div class="step" style="animation-delay:120ms"><div class="n">03</div><div class="h">A level is released</div><div class="d">The author gets a Vouch account and the next slice of funding.</div></div>
+</div>
+
+<div id="boot" class="empty" style="margin-top:26px"><span class="spin"></span>Setting up the grant program on Vouch</div>
 
 <div id="app" style="display:none">
-  <h2>Try it</h2>
-  <p class="sect">Paste a pull request URL, or click an example to load one.</p>
+  <div class="eyebrow">Try it</div>
+  <h2 class="headline">Check a real pull request.</h2>
+  <p class="sect">Paste a URL, or click an example to load one.</p>
   <div class="prv">
     <div class="prv-in"><input id="prurl" placeholder="https://github.com/owner/repo/pull/123"><button class="btn" id="verify">Verify</button></div>
     <div class="egs">
-      <span class="lb">Examples:</span>
+      <span class="lb">Examples</span>
       <button class="eg" data-eg="https://github.com/LWCW-Europe/schellingboard/pull/700"><span class="dot p"></span>Passes every check</button>
       <button class="eg" data-eg="https://github.com/openshift-online/rosa-hyperfleet-api/pull/176"><span class="dot p"></span>Another that passes</button>
       <button class="eg" data-eg="https://github.com/opendocument-app/OpenDocument.droid/pull/508"><span class="dot h"></span>Held, no AI co-author</button>
@@ -161,21 +175,24 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
     <div id="verifybox"></div>
   </div>
 
-  <h2>The grant fund</h2>
-  <p class="sect">Live totals for this program, read back from Vouch.</p>
+  <div class="eyebrow">The fund</div>
+  <h2 class="headline">Live totals, read back from Vouch.</h2>
+  <p class="sect">There is no database here. Vouch stores every milestone, and this page rebuilds itself from those records.</p>
   <div class="kpis" id="kpis"></div>
 
-  <h2>Funded contributors</h2>
-  <p class="sect">Each level is earned by a merged pull request, so nobody is paid for simply showing up. Click any pull request below to check the work yourself.</p>
+  <div class="eyebrow">Contributors</div>
+  <h2 class="headline">Everyone here earned it.</h2>
+  <p class="sect">Each level was unlocked by a merged pull request. Click any of them to check the work yourself.</p>
   <div class="people" id="people"></div>
   <div class="empty" id="nopeople" style="display:none">Nobody yet. Verify a pull request above and the author shows up here.</div>
 
-  <h2>Every call to Vouch</h2>
+  <div class="eyebrow">Receipts</div>
+  <h2 class="headline">Every call to Vouch.</h2>
   <p class="sect">Nothing here is staged. This is the live request log.</p>
   <div class="log" id="log"></div>
 
   <div class="foot">
-    <span class="muted">MeritGrant runs on the Vouch API</span>
+    <span>MeritGrant runs on the Vouch API</span>
     <button class="link" id="reset">Reload from Vouch</button>
   </div>
 </div>
@@ -203,11 +220,11 @@ function plainWords(v){
 function render(st){
   if(!st||!st.contributors) return;
   const s=st.summary;
-  $('#kpis').innerHTML=[['Contributors',s.contributors,''],['Released','$'+s.total_released,'accent'],['Recorded on Vouch',s.vouch_events,'good'],['Held',s.held,'warn']]
-    .map((a,i)=>`<div class="tile ${a[2]}" style="animation-delay:${i*40}ms"><div class="k">${a[0]}</div><div class="v">${a[1]}</div></div>`).join('');
+  $('#kpis').innerHTML=[['Contributors',s.contributors,''],['Released','$'+s.total_released,'accent'],['On Vouch',s.vouch_events,'good'],['Held',s.held,'warn']]
+    .map((a,i)=>`<div class="tile ${a[2]}" style="animation-delay:${i*45}ms"><div class="k">${a[0]}</div><div class="v">${a[1]}</div></div>`).join('');
   $('#people').innerHTML=st.contributors.map((c,i)=>{
     const track=st.ladder.map(l=>`<div class="seg ${l.level<=c.level?'done':(l.level===c.heldNext?'held':'')}"></div>`).join('');
-    return `<div class="person" style="animation-delay:${i*50}ms">
+    return `<div class="person" style="animation-delay:${i*55}ms">
       <div class="phead"><div><span class="nm">${c.name}</span><span class="gh">@${c.github}</span></div><span class="badge ${c.verified?'ok':'no'}">${c.verified?'verified':'unverified'}</span></div>
       <div class="track">${track}</div>
       <div class="tracklb">${c.level?`level ${c.level} of ${st.ladder.length}`:`no funding released`}</div>
