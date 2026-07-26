@@ -126,6 +126,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;fl
 .st{min-width:26px}.st.ok{color:var(--good)}.st.warn{color:var(--warn)}.st.bad{color:var(--bad)}
 .log .lbl{min-width:112px}.log .pa{color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .log .mt{color:var(--fg3);margin-left:auto}
+.log .tm{color:var(--fg3);margin-left:auto}
+.log .tm+.mt{margin-left:12px;min-width:52px;text-align:right}
 .empty{border:1px dashed var(--line2);border-radius:var(--r);padding:26px;text-align:center;color:var(--fg3);font-size:var(--fs-sm)}
 .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--fg3)}
 .link{font:inherit;font-size:var(--fs-sm);background:none;border:0;color:var(--fg3);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
@@ -188,7 +190,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;fl
 
   <div class="eyebrow">Receipts</div>
   <h2 class="headline">Every call to Vouch.</h2>
-  <p class="sect">Nothing here is staged. This is the live request log.</p>
+  <p class="sect">One row per HTTP request this server made to api.programmablevouchers.com, with the status and how long it took. Nothing is added by hand.</p>
   <div class="log" id="log"></div>
 
   <div class="foot">
@@ -232,7 +234,7 @@ function render(st){
       ${(c.prs&&c.prs.length)?`<div class="prlist"><span class="prlb">Unlocked by</span>${c.prs.map(p=>`<a class="prlink ${p.decision}" href="https://github.com/${p.repo}/pull/${p.pr}" target="_blank" title="${p.repo} #${p.pr} · ${p.decision==='RELEASE'?'released level '+p.level:'held'}">${p.repo.split('/')[1]}#${p.pr}</a>`).join('')}</div>`:''}</div>`;
   }).join('');
   $('#nopeople').style.display=st.contributors.length?'none':'block';
-  $('#log').innerHTML=(st.log||[]).slice().reverse().map(l=>`<div class="ln"><span class="st ${stColor(l.status)}">${l.status}</span><span class="lbl">${l.label}</span><span class="pa">${l.method} ${l.path}</span><span class="mt">${l.ms}ms</span></div>`).join('')||'<div class="ln"><span class="pa">No calls yet.</span></div>';
+  $('#log').innerHTML=(st.log||[]).slice().reverse().map(l=>`<div class="ln"><span class="st ${stColor(l.status)}">${l.status}</span><span class="lbl">${l.label}</span><span class="pa">${l.method} ${l.path}</span><span class="tm">${l.at?new Date(l.at).toLocaleTimeString():''}</span><span class="mt">${l.ms}ms</span></div>`).join('')||'<div class="ln"><span class="pa">No calls yet.</span></div>';
 }
 
 function renderVerify(v){

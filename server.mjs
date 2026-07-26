@@ -48,7 +48,9 @@ async function api(label, method, path, body, silent = false) {
     const res = await fetch(B + path, { method, headers: { "x-api-key": KEY, ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
     status = res.status; try { data = await res.json(); } catch {}
   } catch (e) { data = { error: String(e) }; }
-  if (S && !silent) S.log.push({ label, method, path: path.replace(B, ""), status, ms: Date.now() - t0 });
+  // Every row in the log is written here and only here, so a row exists if and
+  // only if a real request went out. `at` lets the UI show when it happened.
+  if (S && !silent) S.log.push({ label, method, path: path.replace(B, ""), status, ms: Date.now() - t0, at: new Date().toISOString() });
   return { status, data };
 }
 
@@ -161,7 +163,9 @@ async function restoreCredited() {
       }
     }
   }
-  if (nPr || nPeople) S.log.push({ label: `restored ${nPeople} contributors, ${nPr} PRs`, method: "GET", path: `/programs/${S.slug}/oracle-events`, status: 200, ms: 0 });
+  // Deliberately not logged. The log is a record of real HTTP calls to Vouch,
+  // and this restore is local work over the response that refreshEvents already
+  // logged. A synthetic row here would be indistinguishable from a real request.
   return nPr;
 }
 
