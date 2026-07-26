@@ -106,7 +106,7 @@ async function ensurePerson({ id, name, github, verified }) {
   const suf = (Date.now() % 1000000000).toString();
   const phone = "+9198" + suf.slice(0, 8);
   const e = await api(`enrol ${name}`, "POST", `/programs/${S.slug}/enrol`, { phone, fields: { fullName: name, github } });
-  S.people[id] = { id, name, github, verified, level: 1, released: amtFor(1), tokenId: e.data?.beneficiary?.tokenId, heldAtNext: false };
+  S.people[id] = { id, name, github, verified, level: 1, released: amtFor(1), tokenId: e.data?.beneficiary?.tokenId, heldAtNext: false, prs: [] };
   return S.people[id];
 }
 
@@ -142,13 +142,20 @@ async function restoreCredited() {
       nPr++;
     }
     const id = p.contributor || (p.github ? "gh_" + String(p.github).toLowerCase() : null);
-    if (id && p.github && p.level != null && !S.people[id]) {
-      S.people[id] = {
-        id, name: p.name || p.github, github: p.github, verified: p.verified !== false,
-        level: p.level, released: p.released ?? amtFor(1), tokenId: p.tokenId,
-        heldAtNext: !!p.heldNext,
-      };
-      nPeople++;
+    if (id && p.github && p.level != null) {
+      if (!S.people[id]) {
+        // First sighting is the newest event, so it carries their current standing.
+        S.people[id] = {
+          id, name: p.name || p.github, github: p.github, verified: p.verified !== false,
+          level: p.level, released: p.released ?? amtFor(1), tokenId: p.tokenId,
+          heldAtNext: !!p.heldNext, prs: [],
+        };
+        nPeople++;
+      }
+      // Every event is one PR they submitted. Unshift so the list ends up oldest first.
+      if (p.repo && p.pr != null) {
+        S.people[id].prs.unshift({ repo: p.repo, pr: p.pr, decision: p.decision || "RELEASE", level: p.level });
+      }
     }
   }
   if (nPr || nPeople) S.log.push({ label: `restored ${nPeople} contributors, ${nPr} PRs`, method: "GET", path: `/programs/${S.slug}/oracle-events`, status: 200, ms: 0 });
@@ -166,9 +173,11 @@ async function releaseFor(person, v, codexCoauthor) {
   else { decision = "RELEASE"; person.level += 1; person.released += amtFor(person.level); person.heldAtNext = false; reason = `Merged with AI co-author, released level ${person.level}`; }
   // The event carries the full outcome, so the whole dashboard can be rebuilt
   // from Vouch alone after a restart. Vouch is the system of record.
+  const repo = `${v.owner}/${v.repo}`;
+  (person.prs ||= []).push({ repo, pr: v.number, decision, level: person.level });
   await api(`ingest PR ${person.name}`, "POST", `/oracles/${S.oracleId}/ingest`, {
     event_type: "pr.merged", contributor: person.id, github: person.github, name: person.name,
-    pr: v.number, repo: `${v.owner}/${v.repo}`, prKey: prKey(v), codexCoauthor,
+    pr: v.number, repo, prKey: prKey(v), codexCoauthor,
     verified: person.verified, decision, level: person.level, released: person.released,
     tokenId: person.tokenId, heldNext: !!person.heldAtNext,
   });
@@ -217,7 +226,7 @@ async function checkPR({ url }) {
 
 function view() {
   if (!S || !S.slug) return { contributors: null };
-  const people = Object.values(S.people).map(p => ({ id: p.id, name: p.name, github: p.github, verified: p.verified, tokenId: p.tokenId, level: p.level, released: p.released, heldNext: p.heldAtNext ? p.level + 1 : 0 }));
+  const people = Object.values(S.people).map(p => ({ id: p.id, name: p.name, github: p.github, verified: p.verified, tokenId: p.tokenId, level: p.level, released: p.released, heldNext: p.heldAtNext ? p.level + 1 : 0, prs: p.prs || [] }));
   return {
     ladder: LADDER, contributors: people, log: S.log.slice(-40),
     summary: {

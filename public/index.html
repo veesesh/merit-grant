@@ -104,6 +104,12 @@ h2{font-size:var(--fs-xs);font-weight:500;font-family:var(--mono);text-transform
 .money{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .money b{font-size:var(--fs-lg);font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .money span{font-family:var(--mono);font-size:var(--fs-xs);color:var(--ink3)}
+.prlist{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.prlb{font-size:var(--fs-xs);color:var(--ink3);width:100%;margin-bottom:2px}
+.prlink{font-family:var(--mono);font-size:var(--fs-xs);text-decoration:none;padding:3px 8px;border-radius:6px;border:1px solid var(--good-line);background:var(--good-bg);color:var(--good);transition:background .15s ease,border-color .15s ease}
+.prlink:hover{background:var(--panel);border-color:var(--good)}
+.prlink.HOLD{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn)}
+.prlink.HOLD:hover{border-color:var(--warn);background:var(--panel)}
 
 
 .log{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 0;font-family:var(--mono);font-size:var(--fs-xs);max-height:220px;overflow:auto;box-shadow:var(--sh)}
@@ -205,7 +211,8 @@ function render(st){
       <div class="phead"><div><span class="nm">${c.name}</span><span class="gh">@${c.github}</span></div><span class="badge ${c.verified?'ok':'no'}">${c.verified?'verified':'unverified'}</span></div>
       <div class="track">${track}</div>
       <div class="tracklb">level ${c.level} of ${st.ladder.length}</div>
-      <div class="money"><b>$${c.released}</b><span>Vouch account ${c.tokenId||'…'}</span></div></div>`;
+      <div class="money"><b>$${c.released}</b><span>Vouch account ${c.tokenId||'…'}</span></div>
+      ${(c.prs&&c.prs.length)?`<div class="prlist"><span class="prlb">Unlocked by</span>${c.prs.map(p=>`<a class="prlink ${p.decision}" href="https://github.com/${p.repo}/pull/${p.pr}" target="_blank" title="${p.repo} #${p.pr} · ${p.decision==='RELEASE'?'released level '+p.level:'held'}">${p.repo.split('/')[1]}#${p.pr}</a>`).join('')}</div>`:''}</div>`;
   }).join('');
   $('#nopeople').style.display=st.contributors.length?'none':'block';
   $('#log').innerHTML=(st.log||[]).slice().reverse().map(l=>`<div class="ln"><span class="st ${stColor(l.status)}">${l.status}</span><span class="lbl">${l.label}</span><span class="pa">${l.method} ${l.path}</span><span class="mt">${l.ms}ms</span></div>`).join('')||'<div class="ln"><span class="pa">No calls yet.</span></div>';
